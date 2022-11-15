@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import ChartView from "./ChartView";
 import { getAreas, getDataSet, Result } from "./queryHelper";
 
 const metrics: {
@@ -17,9 +18,16 @@ const metrics: {
 };
 
 interface Request {
-  area: string | undefined;
+  area: number | undefined;
   metric: string | undefined;
 }
+
+type ExtractedData = {
+  [key: string]: {
+    years: number[];
+    values: number[];
+  };
+};
 
 const maxItems = 32;
 
@@ -32,60 +40,66 @@ function App() {
   );
   const [areas, setAreas] = useState<Result>();
   const [itemsToCompare, setItemsToCompare] = useState<number>(1);
+  const [chartData, setChartData] = useState<ExtractedData>();
 
   useEffect(() => {
     getAreas()
       .then((newAreas) => {
         setAreas(newAreas);
-        defaultRequest(0, newAreas.results.bindings[0].areauri.value);
+        defaultRequest(0);
       })
       .catch((err) => console.error(err));
   }, []);
 
-  const onSubmit = (ev: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
-    const comparisons: {
-      [key: string]: {
-        years: number[];
-        values: number[];
-      };
-    } = {};
-    var years: number[] = [];
-    const values: number[] = [];
+    const comparisons: ExtractedData = {};
     for (let i = 0; i < itemsToCompare; i++) {
-      console.log(requests[i]);
       if (
-        typeof requests[i].area === "string" &&
+        typeof requests[i].area === "number" &&
         typeof requests[i].metric === "string"
       ) {
-        const areaUri = requests[i].area;
+        const years: number[] = [];
+        const values: number[] = [];
+        const areaUri = areas.results.bindings[requests[i].area].areauri.value;
         const metric = metrics[requests[i].metric];
-        console.log(areaUri, metric);
-        getDataSet(areaUri, metric[0], metric[1], metric[2]).then((res) => {
-          const bindings = res.results.bindings;
+        try {
+          const response = await getDataSet(
+            areaUri,
+            metric[0],
+            metric[1],
+            metric[2]
+          );
+          const bindings = response.results.bindings;
           bindings.map((result) => {
             years.push(parseInt(result.periodname.value));
             values.push(parseInt(result.value.value));
           });
-        });
-        comparisons[`${areaUri} ${metric}`] = {
-          years,
-          values,
-        };
+          comparisons[
+            `${areas.results.bindings[requests[i].area].areaname.value}, ${
+              requests[i].metric
+            }`
+          ] = {
+            years,
+            values,
+          };
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
+
+    setChartData(comparisons);
   };
 
-  const defaultRequest = (index: number, defaultArea?: string) => {
+  const defaultRequest = (index: number) => {
     setRequests((reqs) => {
       const newReqs = reqs;
 
       // Set defaults
       newReqs[index] = {
         // When this function is called areas is always defined
-        area: defaultArea
-          ? defaultArea
-          : areas!.results.bindings[0].areauri.value,
+        area: 0,
         metric: "Public transport",
       };
 
@@ -106,7 +120,7 @@ function App() {
                       onChange={(ev) => {
                         setRequests((reqs) => {
                           const newReqs = reqs;
-                          newReqs[index].area = ev.target.value;
+                          newReqs[index].area = parseInt(ev.target.value);
 
                           return newReqs;
                         });
@@ -116,8 +130,9 @@ function App() {
                         <option
                           key={`area-${areaIndex}`}
                           value={
-                            areas.results.bindings[parseInt(areaIndex)].areauri
-                              .value
+                            // areas.results.bindings[parseInt(areaIndex)].areauri
+                            //   .value
+                            areaIndex
                           }
                         >
                           {
@@ -187,8 +202,11 @@ function App() {
           </div>
         </div>
       )}
+      {chartData && <ChartView chartData={chartData} />}
     </>
   );
 }
 
 export default App;
+
+export type { ExtractedData };

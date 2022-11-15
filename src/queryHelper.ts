@@ -44,19 +44,15 @@ const getDataSet = (
   indicator: string,
   indicatorValue: string
 ) => {
-  //for (let i = 0; i < areaUris.length; i++) {
   return new Promise<Result>(async (resolve, reject) => {
     const q = dataSetQuery(areaUri, datasetUri, indicator, indicatorValue);
-    console.log(q);
     try {
       const response = await query(q);
-      console.log(response);
       resolve(response);
     } catch (err) {
       reject(err);
     }
   });
-  //}
 };
 
 export { getAreas, getDataSet };
