@@ -1,4 +1,4 @@
-import { areas } from "./queries";
+import { areas, dataSetQuery } from "./queries";
 
 const url = "http://statistics.gov.scot/sparql.json";
 
@@ -15,14 +15,14 @@ type Result = {
   };
 };
 
-const getAreas = () => {
+const query = (q: string) => {
   return new Promise<Result>((resolve, reject) => {
     fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
       },
-      body: `query=${encodeURI(areas)}`,
+      body: `query=${encodeURI(q)}`,
     })
       .then((res) => {
         res
@@ -34,5 +34,30 @@ const getAreas = () => {
   });
 };
 
-export { getAreas };
+const getAreas = () => {
+  return query(areas);
+};
+
+const getDataSet = (
+  areaUri: string,
+  datasetUri: string,
+  indicator: string,
+  indicatorValue: string
+) => {
+  //for (let i = 0; i < areaUris.length; i++) {
+  return new Promise<Result>(async (resolve, reject) => {
+    const q = dataSetQuery(areaUri, datasetUri, indicator, indicatorValue);
+    console.log(q);
+    try {
+      const response = await query(q);
+      console.log(response);
+      resolve(response);
+    } catch (err) {
+      reject(err);
+    }
+  });
+  //}
+};
+
+export { getAreas, getDataSet };
 export type { Result };
