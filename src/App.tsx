@@ -8,8 +8,8 @@ const maxItems = 32;
 function App() {
   const [requests, setRequests] = useState<Request[]>(
     new Array(maxItems).fill({
-      area: undefined,
-      metric: undefined,
+      area: 0,
+      metric: "Public transport",
     })
   );
   const [areas, setAreas] = useState<Result>();
@@ -61,12 +61,7 @@ function App() {
                     setItemsToCompare((items) => {
                       const newItems = items - 1;
 
-                      setRequests((reqs) => {
-                        const newReqs = reqs;
-                        newReqs[items] = { area: undefined, metric: undefined };
-
-                        return newReqs;
-                      });
+                      defaultRequest(items);
 
                       return newItems;
                     })

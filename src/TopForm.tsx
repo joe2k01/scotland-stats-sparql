@@ -2,8 +2,8 @@ import { Dispatch, SetStateAction } from "react";
 import { getDataSet, Result } from "./queryHelper";
 
 interface Request {
-  area: number | undefined;
-  metric: string | undefined;
+  area: number;
+  metric: string;
 }
 
 type ExtractedData = {
