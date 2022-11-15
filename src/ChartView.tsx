@@ -28,8 +28,14 @@ const randomRGB = () => {
   return `rgba(${channel()}, ${channel()}, ${channel()}, 1)`;
 };
 
-const chartJsData = (chartData: ExtractedData) => {
+const chartJsData = (chartData: ExtractedData, yearBounds: number[]) => {
   const colours = Object.keys(chartData).map(() => randomRGB());
+  const labels: string[] = [];
+
+  for (let i = yearBounds[0]; i < yearBounds[1]; i++) {
+    labels.push(i.toString());
+  }
+
   return {
     datasets: Object.keys(chartData).map((dataKey, index) => {
       return {
@@ -39,9 +45,7 @@ const chartJsData = (chartData: ExtractedData) => {
         backgroundColor: colours[index],
       };
     }),
-    labels: chartData[Object.keys(chartData)[0]].years.map((year) =>
-      year.toString()
-    ),
+    labels,
   };
 };
 
@@ -66,11 +70,14 @@ const chartJsOptions = (chartData: ExtractedData) => {
   };
 };
 
-const ChartView: React.FC<{ chartData: ExtractedData }> = ({ chartData }) => {
+const ChartView: React.FC<{
+  chartData: ExtractedData;
+  yearBounds: number[];
+}> = ({ chartData, yearBounds }) => {
   const [displayData, setDisplayData] = useState<any>(undefined);
   const [options, setOptions] = useState<any>(undefined);
   useEffect(() => {
-    setDisplayData(chartJsData(chartData));
+    setDisplayData(chartJsData(chartData, yearBounds));
     setOptions(chartJsOptions(chartData));
   }, [chartData]);
   return (

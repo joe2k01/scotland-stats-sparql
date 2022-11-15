@@ -14,6 +14,7 @@ function App() {
   );
   const [areas, setAreas] = useState<Result>();
   const [itemsToCompare, setItemsToCompare] = useState<number>(1);
+  const [yearBounds, setYearBounds] = useState<number[]>([0, 0]);
   const [chartData, setChartData] = useState<ExtractedData | undefined>();
 
   useEffect(() => {
@@ -51,6 +52,7 @@ function App() {
               requests={requests}
               setRequests={setRequests}
               setChartData={setChartData}
+              setYearBounds={setYearBounds}
             />
             <div className="flex flex-col">
               <p>Items to compare:</p>
@@ -86,7 +88,9 @@ function App() {
           </div>
         </div>
       )}
-      {chartData && <ChartView chartData={chartData} />}
+      {chartData && yearBounds && (
+        <ChartView chartData={chartData} yearBounds={yearBounds} />
+      )}
     </>
   );
 }

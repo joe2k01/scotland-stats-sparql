@@ -19,6 +19,7 @@ interface TopFormI {
   requests: Request[];
   setRequests: Dispatch<SetStateAction<Request[]>>;
   setChartData: Dispatch<SetStateAction<ExtractedData | undefined>>;
+  setYearBounds: Dispatch<React.SetStateAction<number[]>>;
 }
 
 const metrics: {
@@ -42,6 +43,7 @@ const TopForm: React.FC<TopFormI> = ({
   requests,
   setRequests,
   setChartData,
+  setYearBounds,
 }) => {
   const onSubmit = async (ev: React.FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
@@ -81,6 +83,34 @@ const TopForm: React.FC<TopFormI> = ({
       }
     }
 
+    // Get year bounds
+    let lowest = 9999;
+    let highest = -1;
+    Object.keys(comparisons).forEach((comparison) => {
+      const startYear = comparisons[comparison].years[0];
+      const endYear =
+        comparisons[comparison].years[comparisons[comparison].years.length - 1];
+
+      if (startYear < lowest) lowest = startYear;
+
+      if (endYear > highest) highest = endYear;
+    });
+
+    // Pad data
+    Object.keys(comparisons).forEach((comparison) => {
+      const startDelta = comparisons[comparison].years[0] - lowest;
+      for (var i = 0; i < startDelta; i++) {
+        comparisons[comparison].values.unshift(0);
+      }
+      const endDelta =
+        highest -
+        comparisons[comparison].years[comparisons[comparison].years.length - 1];
+      for (var i = 0; i < endDelta; i++) {
+        comparisons[comparison].values.push(0);
+      }
+    });
+
+    setYearBounds([lowest, highest]);
     setChartData(comparisons);
   };
   return (
