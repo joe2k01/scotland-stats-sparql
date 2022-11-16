@@ -32,7 +32,7 @@ const chartJsData = (chartData: ExtractedData, yearBounds: number[]) => {
   const colours = Object.keys(chartData).map(() => randomRGB());
   const labels: string[] = [];
 
-  for (let i = yearBounds[0]; i < yearBounds[1]; i++) {
+  for (let i = yearBounds[0]; i <= yearBounds[1]; i++) {
     labels.push(i.toString());
   }
 
