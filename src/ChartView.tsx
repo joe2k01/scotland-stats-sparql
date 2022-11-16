@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -58,6 +58,7 @@ const chartJsOptions = (chartData: ExtractedData) => {
   };
   return {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top" as const,
@@ -76,18 +77,20 @@ const ChartView: React.FC<{
 }> = ({ chartData, yearBounds }) => {
   const [displayData, setDisplayData] = useState<any>(undefined);
   const [options, setOptions] = useState<any>(undefined);
+  const chartRef = useRef();
   useEffect(() => {
     setDisplayData(chartJsData(chartData, yearBounds));
     setOptions(chartJsOptions(chartData));
   }, [chartData]);
+
   return (
-    <>
+    <div className="w-full h-full px-4 py-4">
       {displayData && options && (
-        <div className="w-full h-full">
-          <Line data={displayData} options={options} />
+        <div className="relative w-[80vw] sm:w-[90vw] md:w-[70vw] h-[80vh] m-auto">
+          <Line data={displayData} options={options} ref={chartRef} />
         </div>
       )}
-    </>
+    </div>
   );
 };
 

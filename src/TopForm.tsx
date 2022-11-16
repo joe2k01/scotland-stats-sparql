@@ -117,9 +117,13 @@ const TopForm: React.FC<TopFormI> = ({
     <>
       {areas && (
         <form onSubmit={onSubmit}>
+          <div className="grid grid-cols-2 w-full gap-2">
+            <p className="mx-auto">Area</p>
+            <p className="mx-auto">Metric</p>
+          </div>
           <div className="flex flex-col">
             {Array.from({ length: itemsToCompare }).map((_, index) => (
-              <div className="flex flex-row" key={`select-${index}`}>
+              <div className="selectContainer" key={`select-${index}`}>
                 <select
                   onChange={(ev) => {
                     setRequests((reqs) => {
@@ -158,7 +162,11 @@ const TopForm: React.FC<TopFormI> = ({
               </div>
             ))}
           </div>
-          <input type="submit" />
+          <input
+            type="submit"
+            value="Compare"
+            className="p-2 md:p-4 rounded-md bg-slate-100 border-2 border-sky-600 hover:cursor-pointer mt-4"
+          />
         </form>
       )}
     </>

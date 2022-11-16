@@ -6,3 +6,15 @@ body,
 html {
   @apply w-full h-full p-0 m-0;
 }
+
+select {
+  @apply p-1 md:p-3 rounded-md w-[40vw] md:w-max odd:mr-2 bg-slate-100 border-2 border-sky-600 outline-none text-sm md:text-base;
+}
+
+button {
+  @apply p-4 rounded-full bg-slate-100 border-2 border-sky-600 disabled:bg-slate-500 disabled:border-sky-800;
+}
+
+.selectContainer {
+  @apply flex flex-row [&:nth-child(n+2)]:mt-2;
+}
