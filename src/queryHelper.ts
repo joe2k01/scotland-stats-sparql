@@ -1,6 +1,6 @@
 import { areas, dataSetQuery } from "./queries";
 
-const url = "http://statistics.gov.scot/sparql.json";
+const url = "https://statistics.gov.scot/sparql.json";
 
 type Result = {
   head: {
